@@ -1,0 +1,18 @@
+.action-btn {
+    background-color: #31168C;
+    color: white;
+    padding: 10px 0px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100px;
+    font-size: 20px;
+}
+
+.action-btn:hover {
+    background-color: #26106B;
+}
+
+.action-btn:disabled {
+    background-color: #16093F;
+    cursor: not-allowed;
+}

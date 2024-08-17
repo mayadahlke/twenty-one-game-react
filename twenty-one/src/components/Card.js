@@ -1,11 +1,21 @@
-export default function Card({ card, hidden = false }) {
+export default function Card({
+    card,
+    hidden = false,
+    disabled = false,
+    isHitCard = false,
+}) {
+    /*************************** render *****************************/
     return (
         <div
-            className="flex flex-col bg-[#9C2B2B] p-2 rounded w-[65px] h-[104px]"
-
+            className={
+                "flex flex-col p-2 rounded w-[65px] h-[104px] " +
+                (disabled ? "bg-[#561b1b]" : "bg-[#9C2B2B]")
+            }
         >
             {hidden ? (
-                <div className="border-2 border-double border-white h-full"></div>
+                <div className="border-2 border-double border-white text-white flex items-center justify-center h-full">
+                    {isHitCard && "HIT"}
+                </div>
             ) : (
                 <>
                     <div className="text-white text-lg text-start">

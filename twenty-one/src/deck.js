@@ -1,7 +1,7 @@
 // A deck of cards has 52 cards
 // Each card has a name, value, and suit
 // The name of the card is a string (2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K, A)
-// The value of the card is a number (2-11) - A is 11 or 1
+// The value of the card is a number (2-11) - A is 11 (or 1 but this could be a future enhancement)
 // The suit of the card is a string (♦, ♥, ♣, ♠)
 
 export const deck = [

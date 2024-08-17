@@ -5,6 +5,8 @@ import { deck } from "./deck";
 
 export default function App() {
     /*************************** useMemo *****************************/
+    const gameOptions = useMemo(() => ({ hit: "Hit", stand: "Stand" }), []);
+
     const gameFinaleOptions = useMemo(
         () => ({
             win: "You win! 🎉",
@@ -19,42 +21,55 @@ export default function App() {
     const [remainingDeck, setRemainingDeck] = useState(deck);
     const [reveal, setReveal] = useState(false);
     const [final, setFinal] = useState("");
+    const [isOpponentTurn, setIsOpponentTurn] = useState(false);
 
     const [cards, setCards] = useState([]);
     const [currentCard, setCurrentCard] = useState({});
     const [score, setScore] = useState(0);
+    const [play, setPlay] = useState("--");
 
     const [opponentCards, setOpponentCards] = useState([]);
     const [opponentScore, setOpponentScore] = useState(0);
+    const [opponentPlay, setOpponentPlay] = useState("--");
 
     /************************* helper functions ************************/
-    function selectCard() {
+    function getRandomCard() {
         const randomIndex = Math.floor(Math.random() * remainingDeck.length);
         const randomCard = remainingDeck[randomIndex];
         const remainingCards = [...remainingDeck].filter(
             (card) => card.id !== randomCard.id
         );
 
-        setScore(score + randomCard.value);
-        setCurrentCard(randomCard);
-        setCards([...cards, randomCard]);
+        setRemainingDeck(remainingCards);
 
-        const randomIndexForOpponent = Math.floor(
-            Math.random() * remainingCards.length
-        );
-        const randomCardForOpponent = remainingCards[randomIndexForOpponent];
+        return randomCard;
+    }
 
-        setOpponentScore(opponentScore + randomCardForOpponent.value);
-        setOpponentCards([...opponentCards, randomCardForOpponent]);
-        setRemainingDeck(
-            remainingCards.filter(
-                (card) => card.id !== randomCardForOpponent.id
-            )
-        );
+    function opponentSelectCard() {
+        if (opponentScore >= 17) {
+            setOpponentPlay(gameOptions.stand);
+        } else {
+            const card = getRandomCard();
+
+            setOpponentScore(opponentScore + card.value);
+            setOpponentCards([...opponentCards, card]);
+            setOpponentPlay(gameOptions.hit);
+        }
+
+        setIsOpponentTurn(false);
+    }
+
+    function selectCard() {
+        const card = getRandomCard();
+
+        setScore(score + card.value);
+        setCurrentCard(card);
+        setCards([...cards, card]);
+        setPlay(gameOptions.hit);
+        setIsOpponentTurn(true);
     }
 
     function revealGame() {
-        debugger;
         if (score > 21) {
             setFinal(gameFinaleOptions.bust);
         } else if (opponentScore > 21) {
@@ -74,13 +89,16 @@ export default function App() {
         setRemainingDeck(deck);
         setReveal(false);
         setFinal("");
+        setIsOpponentTurn(false);
 
         setCards([]);
         setCurrentCard({});
         setScore(0);
+        setPlay("--");
 
         setOpponentCards([]);
         setOpponentScore(0);
+        setOpponentPlay("--");
     }
 
     /*************************** useEffect *****************************/
@@ -90,13 +108,8 @@ export default function App() {
             setReveal(true);
         }
 
-        if (score === 21) {
+        if (opponentScore > 21) {
             setFinal(gameFinaleOptions.win);
-            setReveal(true);
-        }
-
-        if (opponentScore === 21) {
-            setFinal(gameFinaleOptions.lose);
             setReveal(true);
         }
     }, [score, opponentScore, gameFinaleOptions]);
@@ -114,7 +127,7 @@ export default function App() {
 
             <div className="flex justify-between items-center gap-4 bg-[#C7A170] rounded m-10 h-1/2">
                 <div className="flex flex-col items-center h-full p-3 grow">
-                    <div className="text-2xl">Opponent</div>
+                    <div className="text-2xl">Opponent: {opponentPlay}</div>
                     <div className="text-2xl">
                         Opponent Score: {reveal ? opponentScore : "--"}
                     </div>
@@ -128,10 +141,22 @@ export default function App() {
                 <div className="flex justify-center items-center gap-3 w-[142px]">
                     <button
                         className="cursor-pointer"
-                        onClick={selectCard}
-                        disabled={reveal}
+                        onClick={() => {
+                            selectCard();
+                            setTimeout(() => {
+                                if (!reveal) {
+                                    opponentSelectCard();
+                                }
+                            }, 500);
+                        }}
+                        disabled={reveal || isOpponentTurn}
                     >
-                        <Card card={{}} hidden={true} />
+                        <Card
+                            card={{}}
+                            hidden={true}
+                            isHitCard={true}
+                            disabled={reveal || isOpponentTurn}
+                        />
                     </button>
 
                     {Object.keys(currentCard).length > 0 && (
@@ -140,7 +165,7 @@ export default function App() {
                 </div>
 
                 <div className="flex flex-col items-center h-full p-3 grow">
-                    <div className="text-2xl">You</div>
+                    <div className="text-2xl">Player: {play}</div>
                     <div className="text-2xl">Score: {score}</div>
                     <div className="flex flex-wrap justify-center items-center gap-3 grow">
                         {cards.map((card) => (
@@ -150,7 +175,10 @@ export default function App() {
                     <div className="flex items-center gap-3">
                         <button
                             className="action-btn"
-                            onClick={revealGame}
+                            onClick={() => {
+                                setPlay(gameOptions.stand);
+                                revealGame();
+                            }}
                             disabled={reveal}
                         >
                             Stand

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "./App.css";
 import Card from "./components/Card";
+import Hand from "./components/Hand";
 import { deck } from "./deck";
 
 export default function App() {
@@ -11,7 +12,7 @@ export default function App() {
         () => ({
             win: "You win! 🎉",
             lose: "You lose! 😔",
-            draw: "Draw! 🤝",
+            push: "Push! 🤝",
             bust: "Bust!",
         }),
         []
@@ -21,16 +22,16 @@ export default function App() {
     const [remainingDeck, setRemainingDeck] = useState(deck);
     const [reveal, setReveal] = useState(false);
     const [final, setFinal] = useState("");
-    const [isOpponentTurn, setIsOpponentTurn] = useState(false);
+    const [isDealerTurn, setIsDealerTurn] = useState(false);
 
     const [cards, setCards] = useState([]);
     const [currentCard, setCurrentCard] = useState({});
     const [score, setScore] = useState(0);
     const [play, setPlay] = useState("--");
 
-    const [opponentCards, setOpponentCards] = useState([]);
-    const [opponentScore, setOpponentScore] = useState(0);
-    const [opponentPlay, setOpponentPlay] = useState("--");
+    const [dealerCards, setDealerCards] = useState([]);
+    const [dealerScore, setDealerScore] = useState(0);
+    const [dealerPlay, setDealerPlay] = useState("--");
 
     /************************* helper functions ************************/
     function getRandomCard() {
@@ -45,18 +46,18 @@ export default function App() {
         return randomCard;
     }
 
-    function opponentSelectCard() {
-        if (opponentScore >= 17) {
-            setOpponentPlay(gameOptions.stand);
+    function dealerSelectCard() {
+        if (dealerScore >= 17) {
+            setDealerPlay(gameOptions.stand);
         } else {
             const card = getRandomCard();
 
-            setOpponentScore(opponentScore + card.value);
-            setOpponentCards([...opponentCards, card]);
-            setOpponentPlay(gameOptions.hit);
+            setDealerScore(dealerScore + card.value);
+            setDealerCards([...dealerCards, card]);
+            setDealerPlay(gameOptions.hit);
         }
 
-        setIsOpponentTurn(false);
+        setIsDealerTurn(false);
     }
 
     function selectCard() {
@@ -66,17 +67,17 @@ export default function App() {
         setCurrentCard(card);
         setCards([...cards, card]);
         setPlay(gameOptions.hit);
-        setIsOpponentTurn(true);
+        setIsDealerTurn(true);
     }
 
     function revealGame() {
         if (score > 21) {
             setFinal(gameFinaleOptions.bust);
-        } else if (opponentScore > 21) {
+        } else if (dealerScore > 21) {
             setFinal(gameFinaleOptions.win);
-        } else if (opponentScore === score) {
+        } else if (dealerScore === score) {
             setFinal(gameFinaleOptions.draw);
-        } else if (opponentScore > score) {
+        } else if (dealerScore > score) {
             setFinal(gameFinaleOptions.lose);
         } else {
             setFinal(gameFinaleOptions.win);
@@ -89,16 +90,16 @@ export default function App() {
         setRemainingDeck(deck);
         setReveal(false);
         setFinal("");
-        setIsOpponentTurn(false);
+        setIsDealerTurn(false);
 
         setCards([]);
         setCurrentCard({});
         setScore(0);
         setPlay("--");
 
-        setOpponentCards([]);
-        setOpponentScore(0);
-        setOpponentPlay("--");
+        setDealerCards([]);
+        setDealerScore(0);
+        setDealerPlay("--");
     }
 
     /*************************** useEffect *****************************/
@@ -108,11 +109,11 @@ export default function App() {
             setReveal(true);
         }
 
-        if (opponentScore > 21) {
+        if (dealerScore > 21) {
             setFinal(gameFinaleOptions.win);
             setReveal(true);
         }
-    }, [score, opponentScore, gameFinaleOptions]);
+    }, [score, dealerScore, gameFinaleOptions]);
 
     /*************************** render *****************************/
     return (
@@ -121,21 +122,19 @@ export default function App() {
             <p className="text-2xl text-center">
                 Tap the card in the middle to start the game.<br></br>The goal
                 is to get your score as close to 21 as possible without going
-                over and beat the opponent's score. Click 'Stand' to end your
+                over and beat the dealer's score. Click 'Stand' to end your
                 turn. Good luck!
             </p>
 
             <div className="flex justify-between items-center gap-4 bg-[#C7A170] rounded m-10 h-1/2">
                 <div className="flex flex-col items-center h-full p-3 grow">
-                    <div className="text-2xl">Opponent: {opponentPlay}</div>
-                    <div className="text-2xl">
-                        Opponent Score: {reveal ? opponentScore : "--"}
-                    </div>
-                    <div className="flex flex-wrap justify-center items-center gap-3 grow mb-[52px]">
-                        {opponentCards.map((card) => (
-                            <Card key={card.id} card={card} hidden={!reveal} />
-                        ))}
-                    </div>
+                    <Hand
+                        cards={dealerCards}
+                        player="Dealer"
+                        play={dealerPlay}
+                        score={reveal ? dealerScore : "--"}
+                        hidden={!reveal}
+                    />
                 </div>
 
                 <div className="flex justify-center items-center gap-3 w-[142px]">
@@ -145,17 +144,17 @@ export default function App() {
                             selectCard();
                             setTimeout(() => {
                                 if (!reveal) {
-                                    opponentSelectCard();
+                                    dealerSelectCard();
                                 }
                             }, 500);
                         }}
-                        disabled={reveal || isOpponentTurn}
+                        disabled={reveal || isDealerTurn}
                     >
                         <Card
                             card={{}}
                             hidden={true}
                             isHitCard={true}
-                            disabled={reveal || isOpponentTurn}
+                            disabled={reveal || isDealerTurn}
                         />
                     </button>
 
@@ -165,13 +164,12 @@ export default function App() {
                 </div>
 
                 <div className="flex flex-col items-center h-full p-3 grow">
-                    <div className="text-2xl">Player: {play}</div>
-                    <div className="text-2xl">Score: {score}</div>
-                    <div className="flex flex-wrap justify-center items-center gap-3 grow">
-                        {cards.map((card) => (
-                            <Card key={card.id} card={card} />
-                        ))}
-                    </div>
+                    <Hand
+                        cards={cards}
+                        player="Player"
+                        play={play}
+                        score={score}
+                    />
                     <div className="flex items-center gap-3">
                         <button
                             className="action-btn"

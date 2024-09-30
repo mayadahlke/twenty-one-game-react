@@ -8,7 +8,10 @@ export default function Hand({ cards, player, play, score, hidden = false }) {
                 {player}: {play}
             </div>
             <div className="text-2xl">Score: {score}</div>
-            <div className="flex flex-wrap justify-center items-center gap-3 grow mb-[52px]">
+            <div
+                className="flex flex-wrap justify-center items-center gap-3 grow mb-[52px]"
+                data-testid={`${player.toLowerCase()}-cards`}
+            >
                 {cards.map((card) => (
                     <Card key={card.id} card={card} hidden={hidden} />
                 ))}

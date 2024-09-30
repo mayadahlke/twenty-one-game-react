@@ -1,9 +1,4 @@
-export default function Card({
-    card,
-    hidden = false,
-    disabled = false,
-    isHitCard = false,
-}) {
+export default function Card({ card, hidden = false, disabled = false }) {
     /*************************** render *****************************/
     return (
         <div
@@ -13,9 +8,7 @@ export default function Card({
             }
         >
             {hidden ? (
-                <div className="border-2 border-double border-white text-white flex items-center justify-center h-full">
-                    {isHitCard && "HIT"}
-                </div>
+                <div className="border-2 border-double border-white text-white flex items-center justify-center h-full"></div>
             ) : (
                 <>
                     <div className="text-white text-lg text-start">

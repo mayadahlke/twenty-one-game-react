@@ -4,10 +4,18 @@ import Ace from "./components/Ace";
 import Hand from "./components/Hand";
 import { deck } from "./deck";
 
+export const Player = {
+    PLAYER: "Player",
+    DEALER: "Dealer",
+};
+
+export const GameOption = {
+    HIT: "Hit",
+    STAND: "Stand",
+};
+
 export default function App() {
     /*************************** useMemo *****************************/
-    const gameOptions = useMemo(() => ({ hit: "Hit", stand: "Stand" }), []);
-
     const gameFinaleOptions = useMemo(
         () => ({
             win: "You win! 🎉",
@@ -25,7 +33,7 @@ export default function App() {
     const [isDealerTurn, setIsDealerTurn] = useState(false);
 
     const [cards, setCards] = useState([]);
-    const [isAce, setIsAce] = useState(false);
+    const [numberOfAces, setNumberOfAces] = useState(0);
     const [score, setScore] = useState(0);
     const [play, setPlay] = useState("--");
 
@@ -46,15 +54,38 @@ export default function App() {
         return randomCard;
     }
 
+    function dealTwoCards() {
+        const card1 = getRandomCard();
+        const card2 = getRandomCard();
+
+        if (card1.name === "A" && card2.name === "A") {
+            setNumberOfAces(2);
+        } else if (
+            (card1.name === "A" && card2.name !== "A") ||
+            (card1.name !== "A" && card2.name === "A")
+        ) {
+            setNumberOfAces(1);
+        } else {
+            setScore(card1.value[0] + card2.value[0]);
+        }
+        setCards([card1, card2]);
+
+        const dealerCard1 = getRandomCard();
+        const dealerCard2 = getRandomCard();
+
+        setDealerScore(dealerCard1.value[0] + dealerCard2.value[0]);
+        setDealerCards([dealerCard1, dealerCard2]);
+    }
+
     function dealerSelectCard() {
         if (dealerScore >= 17) {
-            setDealerPlay(gameOptions.stand);
+            setDealerPlay(GameOption.STAND);
         } else {
             const card = getRandomCard();
 
             setDealerScore(dealerScore + card.value[0]);
             setDealerCards([...dealerCards, card]);
-            setDealerPlay(gameOptions.hit);
+            setDealerPlay(GameOption.HIT);
         }
 
         setIsDealerTurn(false);
@@ -64,35 +95,31 @@ export default function App() {
         const card = getRandomCard();
 
         if (card.name === "A") {
-            setIsAce(true);
+            setNumberOfAces(1);
         } else {
             setScore(score + card.value[0]);
-            setIsDealerTurn(true);
-            dealerSelectCard();
         }
 
+        setIsDealerTurn(true);
+        dealerSelectCard();
         setCards([...cards, card]);
-        setPlay(gameOptions.hit);
+        setPlay(GameOption.HIT);
     }
 
     function setCardScore(value) {
         setScore(score + value);
-        setIsAce(false);
-        setIsDealerTurn(true);
-        dealerSelectCard();
+        setNumberOfAces(numberOfAces - 1);
     }
 
     function revealGame() {
-        if (score > 21) {
-            setFinal(gameFinaleOptions.bust);
-        } else if (dealerScore > 21) {
+        // player not bust & dealer not bust = compare scores
+
+        if (score === dealerScore) {
+            setFinal(gameFinaleOptions.push);
+        } else if (score > dealerScore) {
             setFinal(gameFinaleOptions.win);
-        } else if (dealerScore === score) {
-            setFinal(gameFinaleOptions.draw);
-        } else if (dealerScore > score) {
-            setFinal(gameFinaleOptions.lose);
         } else {
-            setFinal(gameFinaleOptions.win);
+            setFinal(gameFinaleOptions.lose);
         }
 
         setReveal(true);
@@ -103,26 +130,31 @@ export default function App() {
         setReveal(false);
         setFinal("");
         setIsDealerTurn(false);
-
-        setCards([]);
-        setIsAce(false);
-        setScore(0);
+        setNumberOfAces(0);
         setPlay("--");
-
-        setDealerCards([]);
-        setDealerScore(0);
         setDealerPlay("--");
+
+        dealTwoCards();
     }
 
     /*************************** useEffect *****************************/
     useEffect(() => {
-        if (score > 21) {
-            setFinal(gameFinaleOptions.bust);
-            setReveal(true);
-        }
+        dealTwoCards();
+    }, []);
 
-        if (dealerScore > 21) {
+    useEffect(() => {
+        // player bust & dealer bust = push
+        // player not bust & dealer bust = win
+        // player bust & dealer not bust = lose
+
+        if (score > 21 && dealerScore > 21) {
+            setFinal(gameFinaleOptions.push);
+            setReveal(true);
+        } else if (score <= 21 && dealerScore > 21) {
             setFinal(gameFinaleOptions.win);
+            setReveal(true);
+        } else if (score > 21 && dealerScore <= 21) {
+            setFinal(gameFinaleOptions.lose);
             setReveal(true);
         }
     }, [score, dealerScore, gameFinaleOptions]);
@@ -140,7 +172,7 @@ export default function App() {
             <div className="flex justify-between items-center gap-4 bg-[#C7A170] rounded m-10 h-1/2">
                 <Hand
                     cards={dealerCards}
-                    player="Dealer"
+                    player={Player.DEALER}
                     play={dealerPlay}
                     score={reveal ? dealerScore : "--"}
                     hidden={!reveal}
@@ -150,7 +182,7 @@ export default function App() {
                     <button
                         className="action-btn"
                         onClick={selectCard}
-                        disabled={reveal || isDealerTurn}
+                        disabled={reveal || isDealerTurn || numberOfAces > 0}
                     >
                         Hit
                     </button>
@@ -158,10 +190,10 @@ export default function App() {
                     <button
                         className="action-btn"
                         onClick={() => {
-                            setPlay(gameOptions.stand);
+                            setPlay(GameOption.STAND);
                             revealGame();
                         }}
-                        disabled={reveal}
+                        disabled={reveal || numberOfAces > 0}
                     >
                         Stand
                     </button>
@@ -171,12 +203,23 @@ export default function App() {
                     </button>
                 </div>
 
-                <Hand cards={cards} player="Player" play={play} score={score} />
+                <Hand
+                    cards={cards}
+                    player={Player.PLAYER}
+                    play={play}
+                    score={score}
+                />
             </div>
 
-            {isAce && <Ace setCardScore={setCardScore} />}
+            {Array.from({ length: numberOfAces }, (_, index) => (
+                <span key={index}>
+                    <Ace setCardScore={setCardScore} />
+                </span>
+            ))}
 
-            <div className="text-4xl text-center">{final}</div>
+            <div className="text-4xl text-center" data-testid="final">
+                {final}
+            </div>
         </div>
     );
 }

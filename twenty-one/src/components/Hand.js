@@ -3,7 +3,7 @@ import Card from "./Card";
 export default function Hand({ cards, player, play, score, hidden = false }) {
     /*************************** render *****************************/
     return (
-        <div className="flex flex-col items-center h-full grow">
+        <div className="flex flex-col items-center h-full p-3 grow w-96">
             <div className="text-2xl">
                 {player}: {play}
             </div>

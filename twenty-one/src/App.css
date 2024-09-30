@@ -16,3 +16,12 @@
     background-color: #16093F;
     cursor: not-allowed;
 }
+
+.ace-btn {
+    background-color: #31168C;
+    color: white;
+    padding: 0px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 20px;
+}

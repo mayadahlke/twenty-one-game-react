@@ -21,7 +21,7 @@ export default function App() {
             win: "You win! 🎉",
             lose: "You lose! 😔",
             push: "Push! 🤝",
-            bust: "Bust!",
+            bust: "Bust! 😬",
         }),
         []
     );
@@ -32,10 +32,10 @@ export default function App() {
     const [final, setFinal] = useState("");
     const [isDealerTurn, setIsDealerTurn] = useState(false);
 
-    const [cards, setCards] = useState([]);
     const [numberOfAces, setNumberOfAces] = useState(0);
-    const [score, setScore] = useState(0);
-    const [play, setPlay] = useState("--");
+    const [playerCards, setPlayerCards] = useState([]);
+    const [playerScore, setPlayerScore] = useState(0);
+    const [playerPlay, setPlayerPlay] = useState("--");
 
     const [dealerCards, setDealerCards] = useState([]);
     const [dealerScore, setDealerScore] = useState(0);
@@ -58,17 +58,21 @@ export default function App() {
         const card1 = getRandomCard();
         const card2 = getRandomCard();
 
-        if (card1.name === "A" && card2.name === "A") {
-            setNumberOfAces(2);
-        } else if (
-            (card1.name === "A" && card2.name !== "A") ||
-            (card1.name !== "A" && card2.name === "A")
-        ) {
-            setNumberOfAces(1);
+        // Check the number of aces the player gets
+        let acesCount =
+            (card1.name === "A" ? 1 : 0) + (card2.name === "A" ? 1 : 0);
+        setNumberOfAces(acesCount);
+
+        if (acesCount === 2) {
+            setPlayerScore(0); // If the player gets two aces, set the score to 0 (they'll choose value)
+        } else if (acesCount === 1) {
+            setPlayerScore(
+                card1.name === "A" ? card2.value[0] : card1.value[0]
+            ); // If the player gets one ace, set the score to the other card's value
         } else {
-            setScore(card1.value[0] + card2.value[0]);
+            setPlayerScore(card1.value[0] + card2.value[0]);
         }
-        setCards([card1, card2]);
+        setPlayerCards([card1, card2]);
 
         const dealerCard1 = getRandomCard();
         const dealerCard2 = getRandomCard();
@@ -97,26 +101,26 @@ export default function App() {
         if (card.name === "A") {
             setNumberOfAces(1);
         } else {
-            setScore(score + card.value[0]);
+            setPlayerScore(playerScore + card.value[0]);
         }
 
         setIsDealerTurn(true);
         dealerSelectCard();
-        setCards([...cards, card]);
-        setPlay(GameOption.HIT);
+        setPlayerCards([...playerCards, card]);
+        setPlayerPlay(GameOption.HIT);
     }
 
     function setCardScore(value) {
-        setScore(score + value);
+        setPlayerScore(playerScore + value);
         setNumberOfAces(numberOfAces - 1);
     }
 
     function revealGame() {
         // player not bust & dealer not bust = compare scores
 
-        if (score === dealerScore) {
+        if (playerScore === dealerScore) {
             setFinal(gameFinaleOptions.push);
-        } else if (score > dealerScore) {
+        } else if (playerScore > dealerScore) {
             setFinal(gameFinaleOptions.win);
         } else {
             setFinal(gameFinaleOptions.lose);
@@ -131,7 +135,7 @@ export default function App() {
         setFinal("");
         setIsDealerTurn(false);
         setNumberOfAces(0);
-        setPlay("--");
+        setPlayerPlay("--");
         setDealerPlay("--");
 
         dealTwoCards();
@@ -145,29 +149,29 @@ export default function App() {
     useEffect(() => {
         // player bust & dealer bust = push
         // player not bust & dealer bust = win
-        // player bust & dealer not bust = lose
+        // player bust & dealer not bust = bust
 
-        if (score > 21 && dealerScore > 21) {
+        if (playerScore > 21 && dealerScore > 21) {
             setFinal(gameFinaleOptions.push);
             setReveal(true);
-        } else if (score <= 21 && dealerScore > 21) {
+        } else if (playerScore <= 21 && dealerScore > 21) {
             setFinal(gameFinaleOptions.win);
             setReveal(true);
-        } else if (score > 21 && dealerScore <= 21) {
-            setFinal(gameFinaleOptions.lose);
+        } else if (playerScore > 21 && dealerScore <= 21) {
+            setFinal(gameFinaleOptions.bust);
             setReveal(true);
         }
-    }, [score, dealerScore, gameFinaleOptions]);
+    }, [playerScore, dealerScore, gameFinaleOptions]);
 
     /*************************** render *****************************/
     return (
         <div className="h-screen bg-[#98774E]">
             <p className="text-5xl text-center pt-10">Twenty One</p>
             <p className="text-2xl text-center">
-                Press 'Hit' in the middle to start the game.<br></br>The goal is
-                to get your score as close to 21 as possible without going over
-                and beat the dealer's score. Click 'Stand' to end your turn.
-                Good luck!
+                The goal of this game is to get your score as close to 21 as
+                possible without going over and beat the dealer's score.{" "}
+                <br></br>Click 'Hit' to get another card or 'Stand' to keep your
+                current hand. Good luck!
             </p>
             <div className="flex justify-between items-center gap-4 bg-[#C7A170] rounded m-10 h-1/2">
                 <Hand
@@ -190,7 +194,7 @@ export default function App() {
                     <button
                         className="action-btn"
                         onClick={() => {
-                            setPlay(GameOption.STAND);
+                            setPlayerPlay(GameOption.STAND);
                             revealGame();
                         }}
                         disabled={reveal || numberOfAces > 0}
@@ -204,10 +208,10 @@ export default function App() {
                 </div>
 
                 <Hand
-                    cards={cards}
+                    cards={playerCards}
                     player={Player.PLAYER}
-                    play={play}
-                    score={score}
+                    play={playerPlay}
+                    score={playerScore}
                 />
             </div>
 

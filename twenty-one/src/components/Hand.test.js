@@ -4,6 +4,7 @@ import Hand from "./Hand";
 
 test("should render correct information from props", () => {
     const cards = [{ id: 1, name: "2", value: [2], suit: "♦" }];
+
     render(
         <Hand
             cards={cards}

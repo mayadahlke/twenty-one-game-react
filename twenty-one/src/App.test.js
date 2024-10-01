@@ -57,20 +57,20 @@ test("should show cards when 'STAND' is clicked", () => {
 test("should reset the game when 'RESET' is clicked", () => {
     render(<App />);
 
-    // // Click the 'STAND' button
-    // const standButton = screen.getByRole("button", { name: "Stand" });
-    // expect(standButton).toBeTruthy();
-    // fireEvent.click(standButton);
+    // Click the 'STAND' button
+    const standButton = screen.getByRole("button", { name: "Stand" });
+    expect(standButton).toBeTruthy();
+    fireEvent.click(standButton);
 
-    // // Click the 'RESET' button
-    // const resetButton = screen.getByRole("button", { name: "Reset" });
-    // expect(resetButton).toBeTruthy();
-    // fireEvent.click(resetButton);
+    // Click the 'RESET' button
+    const resetButton = screen.getByRole("button", { name: "Reset" });
+    expect(resetButton).toBeTruthy();
+    fireEvent.click(resetButton);
 
-    // // Check 'STAND' button is not disabled
-    // expect(standButton).not.toBeDisabled();
+    // Check 'STAND' button is not disabled
+    expect(standButton.hasAttribute("disabled")).toBeFalsy();
 
-    // // Check 'HIT' button is not disabled
-    // const hitButton = screen.getByRole("button", { name: "Hit" });
-    // expect(hitButton)
+    // Check 'HIT' button is not disabled
+    const hitButton = screen.getByRole("button", { name: "Hit" });
+    expect(hitButton.hasAttribute("disabled")).toBeFalsy();
 });

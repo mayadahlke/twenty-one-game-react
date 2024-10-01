@@ -32,11 +32,33 @@ export function dealTwoCardsPerPlayer(remainingDeck) {
 }
 
 /**
+ * @param {Array} playerCards - The player's current hand
+ * @returns {Array} - The player's score and the number of aces in their hand
+ */
+export function calculatePlayerScore(card1, card2) {
+    const acesCount =
+        (card1.name === "A" ? 1 : 0) + (card2.name === "A" ? 1 : 0);
+
+    let score = 0;
+    if (acesCount === 2) {
+        score = 0;
+    } else if (acesCount === 1) {
+        score = card1.name === "A" ? card2.value[0] : card1.value[0];
+    } else {
+        score = card1.value[0] + card2.value[0];
+    }
+
+    return [score, acesCount];
+}
+
+/**
  * @param {number} playerScore - The player's current score
  * @param {number} dealerScore - The dealer's current score
  * @returns {string} - The result of the game
  */
 export function calculateFinal(playerScore, dealerScore) {
+    // player not bust & dealer not bust = compare scores
+
     if (playerScore === dealerScore) {
         return GameResult.PUSH;
     } else if (playerScore > dealerScore) {
@@ -47,11 +69,26 @@ export function calculateFinal(playerScore, dealerScore) {
 }
 
 /**
+* @param {Array} hand - The hand to reveal
+* @returns {Array} - The revealed hand
+*/
+export function revealHand(hand) {
+    hand.forEach((card) => {
+        card.hidden = false;
+    });
+    return hand;
+}
+
+/**
  * @param {number} playerScore - The player's current score
  * @param {number} dealerScore - The dealer's current score
  * @returns {Array} - A boolean indicating if the game is over and the final result
  */
 export function checkForBust(playerScore, dealerScore) {
+    // player bust & dealer bust = push
+    // player not bust & dealer bust = win
+    // player bust & dealer not bust = bust
+
     let reveal = false;
     let final = "";
     if (playerScore > 21 && dealerScore > 21) {

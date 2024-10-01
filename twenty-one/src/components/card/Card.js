@@ -1,4 +1,4 @@
-export default function Card({ card, hidden = false, disabled = false }) {
+export default function Card({ card, disabled = false }) {
     /*************************** render *****************************/
     return (
         <div
@@ -7,7 +7,7 @@ export default function Card({ card, hidden = false, disabled = false }) {
                 (disabled ? "bg-[#561b1b]" : "bg-[#9C2B2B]")
             }
         >
-            {hidden ? (
+            {card.hidden ? (
                 <div className="border-2 border-double border-white text-white flex items-center justify-center h-full"></div>
             ) : (
                 <>

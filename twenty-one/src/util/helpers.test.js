@@ -1,4 +1,10 @@
-import { dealRandomCard, calculateFinal, checkForBust, GameResult } from "./helpers";
+import {
+    dealRandomCard,
+    calculatePlayerScore,
+    calculateFinal,
+    checkForBust,
+    GameResult,
+} from "./helpers";
 
 describe("dealRandomCard utility function", () => {
     test("should return last card when 1 is remaining in the deck", () => {
@@ -8,6 +14,27 @@ describe("dealRandomCard utility function", () => {
     });
 });
 
+describe("calculatePlayerScore utility function", () => {
+    test("should return correct score and ace count when there are no aces in hand", () => {
+        calculatePlayerScore({ name: "2", value: [2] }, { name: "3", value: [3] });
+        expect(calculatePlayerScore({ name: "2", value: [2] }, { name: "3", value: [3] })).toEqual([5, 0]);
+    });
+
+    test("should return correct score and ace count when first card is ace", () => {
+        calculatePlayerScore({ name: "A", value: [1, 11] }, { name: "3", value: [3] });
+        expect(calculatePlayerScore({ name: "A", value: [1, 11] }, { name: "3", value: [3] })).toEqual([3, 1]);
+    });
+
+    test("should return correct score and ace count when second card is ace", () => {
+        calculatePlayerScore({ name: "5", value: [5] }, { name: "A", value: [1, 11] });
+        expect(calculatePlayerScore({ name: "5", value: [5] }, { name: "A", value: [1, 11] })).toEqual([5, 1]);
+    });
+
+    test("should return correct score and ace count when there are 2 aces in hand", () => {
+        calculatePlayerScore({ name: "A", value: [1, 11] }, { name: "A", value: [1, 11] });
+        expect(calculatePlayerScore({ name: "A", value: [1, 11] }, { name: "A", value: [1, 11] })).toEqual([0, 2]);
+    });
+});
 
 describe("calculateFinal utility function", () => {
     test("should return push when player and dealer have same score", () => {
@@ -25,7 +52,6 @@ describe("calculateFinal utility function", () => {
         expect(calculateFinal(9, 10)).toBe(GameResult.LOSE);
     });
 });
-
 
 describe("checkForBust utility function", () => {
     test("should return push when player and deal go over", () => {

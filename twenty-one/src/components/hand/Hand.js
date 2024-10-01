@@ -1,6 +1,6 @@
 import Card from "../card/Card";
 
-export default function Hand({ cards, player, play, score, hidden = false }) {
+export default function Hand({ cards, player, play, score }) {
     /*************************** render *****************************/
     return (
         <div className="flex flex-col items-center h-full p-3 grow w-96">
@@ -13,7 +13,7 @@ export default function Hand({ cards, player, play, score, hidden = false }) {
                 data-testid={`${player.toLowerCase()}-cards`}
             >
                 {cards.map((card) => (
-                    <Card key={card.id} card={card} hidden={hidden} />
+                    <Card key={card.id} card={card} />
                 ))}
             </div>
         </div>

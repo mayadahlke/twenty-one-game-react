@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import Card from "./Card";
 
 test("should render name and suit for a card", () => {
-    const card = { id: 1, name: "2", value: [2], suit: "♦" };
+    const card = { id: 1, name: "2", value: [2], suit: "♦", hidden: false };
     render(<Card card={card} />);
 
     // Check if the card name is rendered
@@ -20,8 +20,8 @@ test("should render name and suit for a card", () => {
 });
 
 test("should not render card name and suit for a hidden card", () => {
-    const card = { id: 1, name: "2", value: [2], suit: "♦" };
-    render(<Card card={card} hidden={true} />);
+    const card = { id: 1, name: "2", value: [2], suit: "♦", hidden: true };
+    render(<Card card={card} />);
 
     // Check if the card name is not rendered
     const cardName = screen.queryByText("2");
@@ -33,7 +33,7 @@ test("should not render card name and suit for a hidden card", () => {
 });
 
 test("should have a different background color for a disabled card", () => {
-    const card = { id: 1, name: "2", value: [2], suit: "♦" };
+    const card = { id: 1, name: "2", value: [2], suit: "♦", hidden: false };
     render(<Card card={card} disabled={true} />);
 
     // Check the background color of the card

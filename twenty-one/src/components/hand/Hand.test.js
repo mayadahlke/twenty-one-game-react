@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { Player, GameOption } from "../App";
+import { Player, GameOption } from "../game/Game";
 import Hand from "./Hand";
 
 test("should render correct information from props", () => {

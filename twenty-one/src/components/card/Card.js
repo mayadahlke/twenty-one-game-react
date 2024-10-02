@@ -1,12 +1,7 @@
-export default function Card({ card, disabled = false }) {
+export default function Card({ card }) {
     /*************************** render *****************************/
     return (
-        <div
-            className={
-                "flex flex-col p-2 rounded w-[65px] h-[104px] " +
-                (disabled ? "bg-[#561b1b]" : "bg-[#9C2B2B]")
-            }
-        >
+        <div className={"flex flex-col p-2 rounded w-[65px] h-[104px]"}>
             {card.hidden ? (
                 <div className="border-2 border-double border-white text-white flex items-center justify-center h-full"></div>
             ) : (

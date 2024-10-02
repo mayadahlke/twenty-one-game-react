@@ -14,7 +14,7 @@ export default function App() {
                 current hand. Good luck!
             </p>
 
-            <Game/>
+            <Game />
         </div>
     );
 }

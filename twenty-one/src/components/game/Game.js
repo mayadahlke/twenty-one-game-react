@@ -3,13 +3,14 @@ import Ace from "../ace/Ace";
 import Hand from "../hand/Hand";
 import {
     dealRandomCard,
-    dealTwoCardsPerPlayer,
     calculatePlayerScore,
+    calculateDealerScore,
     calculateFinal,
     checkForBust,
+    resetDeck,
     revealHand,
 } from "../../util/helpers";
-import { deck } from "../../deck";
+import { deck } from "../../util/deck";
 
 export const Player = {
     PLAYER: "Player",
@@ -44,10 +45,10 @@ export default function Game() {
     }
 
     function dealTwoCards() {
-        const [
-            [playerCard1, playerCard2, dealerCard1, dealerCard2],
-            updatedDeck,
-        ] = dealTwoCardsPerPlayer(remainingDeck);
+        const playerCard1 = getRandomCard();
+        const playerCard2 = getRandomCard();
+        const dealerCard1 = getRandomCard();
+        const dealerCard2 = getRandomCard();
 
         // Update the player's score and cards, check if they have aces though
         const [score, acesCount] = calculatePlayerScore(
@@ -59,12 +60,9 @@ export default function Game() {
         setPlayerCards([playerCard1, playerCard2]);
 
         // Update the dealer's score and cards
-        setDealerScore(dealerCard1.value[0] + dealerCard2.value[0]);
+        setDealerScore(calculateDealerScore(dealerCard1, dealerCard2));
         dealerCard2.hidden = true;
         setDealerCards([dealerCard1, dealerCard2]);
-
-        // Update the remaining deck
-        setRemainingDeck(updatedDeck);
     }
 
     function hit() {
@@ -81,6 +79,7 @@ export default function Game() {
     }
 
     function stand() {
+        debugger
         setPlayerPlay(GameOption.STAND);
 
         // If 16 or less, dealer must hit
@@ -97,13 +96,10 @@ export default function Game() {
         }
         setDealerCards(revealHand(dCards));
 
+        // Calculate the final result
+        const dScore = dCards.reduce((acc, card) => acc + card.value[0], 0);
+        setFinal(calculateFinal(playerScore, dScore));
         setReveal(true);
-        setFinal(
-            calculateFinal(
-                playerScore,
-                dCards.reduce((acc, card) => acc + card.value[0], 0)
-            )
-        );
     }
 
     function setCardScore(value) {
@@ -112,13 +108,18 @@ export default function Game() {
     }
 
     function resetGame() {
-        setRemainingDeck(deck);
+        // Reset the deck hidden property
+        const newDeck = revealHand(deck);
+
+        // Reset the state
+        setRemainingDeck(newDeck);
         setReveal(false);
         setFinal("");
         setNumberOfAces(0);
         setPlayerPlay("--");
         setDealerPlay("--");
 
+        // Deal two new cards
         dealTwoCards();
     }
 
@@ -132,6 +133,7 @@ export default function Game() {
         if (reveal) {
             setReveal(reveal);
             setFinal(final);
+            revealHand(deck);
         }
     }, [playerScore, dealerScore]);
 

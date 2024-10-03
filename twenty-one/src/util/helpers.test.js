@@ -125,18 +125,18 @@ describe("revealHand utility function", () => {
 
 describe("checkForBust utility function", () => {
     test("should return push when player and deal go over", () => {
-        expect(checkForBust(22, 22)).toEqual([true, GameResult.PUSH]);
+        expect(checkForBust(22, 22)).toEqual(GameResult.PUSH);
     });
 
     test("should return win when player does not go over and dealer does", () => {
-        expect(checkForBust(21, 22)).toEqual([true, GameResult.WIN]);
+        expect(checkForBust(21, 22)).toEqual(GameResult.WIN);
     });
 
     test("should return bust when player goes over and dealer does not", () => {
-        expect(checkForBust(22, 20)).toEqual([true, GameResult.BUST]);
+        expect(checkForBust(22, 20)).toEqual(GameResult.BUST);
     });
 
     test("should return false when neither player nor dealer goes over", () => {
-        expect(checkForBust(20, 20)).toEqual([false, ""]);
+        expect(checkForBust(20, 20)).toEqual("");
     });
 });

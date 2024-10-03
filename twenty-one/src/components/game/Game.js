@@ -25,7 +25,6 @@ export const GameOption = {
 export default function Game() {
     /*************************** useState *****************************/
     const [remainingDeck, setRemainingDeck] = useState(deck);
-    const [reveal, setReveal] = useState(false);
     const [final, setFinal] = useState("");
 
     const [numberOfAces, setNumberOfAces] = useState(0);
@@ -102,7 +101,6 @@ export default function Game() {
         setDealerCards(revealHand(dCards));
 
         // Calculate the final result
-        setReveal(true);
         setFinal(calculateFinal(playerScore, dScore));
     }
 
@@ -113,7 +111,6 @@ export default function Game() {
 
     function resetGame() {
         // Reset the state
-        setReveal(false);
         setFinal("");
         setNumberOfAces(0);
         setPlayerPlay("--");
@@ -130,9 +127,8 @@ export default function Game() {
     }, []);
 
     useEffect(() => {
-        const [reveal, final] = checkForBust(playerScore, dealerScore);
-        if (reveal) {
-            setReveal(reveal);
+        const final = checkForBust(playerScore, dealerScore);
+        if (final) {
             setFinal(final);
             revealHand(dealerCards);
         }
@@ -146,14 +142,14 @@ export default function Game() {
                     cards={dealerCards}
                     player={Player.DEALER}
                     play={dealerPlay}
-                    score={reveal ? dealerScore : "--"}
+                    score={final ? dealerScore : "--"}
                 />
 
                 <div className="flex flex-col justify-center items-center gap-3 w-[142px]">
                     <button
                         className="action-btn"
                         onClick={hit}
-                        disabled={reveal || numberOfAces > 0}
+                        disabled={final || numberOfAces > 0}
                     >
                         Hit
                     </button>
@@ -161,7 +157,7 @@ export default function Game() {
                     <button
                         className="action-btn"
                         onClick={stand}
-                        disabled={reveal || numberOfAces > 0}
+                        disabled={final || numberOfAces > 0}
                     >
                         Stand
                     </button>

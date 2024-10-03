@@ -22,7 +22,7 @@ export function dealRandomCard(remainingDeck) {
  * @param {Array} deck - The deck of cards that are still available to be drawn
  * @returns {Array} - The player's two cards and the dealer's two cards
  */
-export function dealTwoCardsPerPlayer(deck) { 
+export function dealTwoCardsPerPlayer(deck) {
     const [card1, updatedDeck1] = dealRandomCard(deck);
     const [card2, updatedDeck2] = dealRandomCard(updatedDeck1);
     const [card3, updatedDeck3] = dealRandomCard(updatedDeck2);
@@ -99,24 +99,20 @@ export function revealHand(hand) {
 /**
  * @param {number} playerScore - The player's current score
  * @param {number} dealerScore - The dealer's current score
- * @returns {Array} - A boolean indicating if the game is over and the final result
+ * @returns {string} - The result of the game
  */
 export function checkForBust(playerScore, dealerScore) {
     // player bust & dealer bust = push
     // player not bust & dealer bust = win
     // player bust & dealer not bust = bust
 
-    let reveal = false;
     let final = "";
     if (playerScore > 21 && dealerScore > 21) {
         final = GameResult.PUSH;
-        reveal = true;
     } else if (playerScore <= 21 && dealerScore > 21) {
         final = GameResult.WIN;
-        reveal = true;
     } else if (playerScore > 21 && dealerScore <= 21) {
         final = GameResult.BUST;
-        reveal = true;
     }
-    return [reveal, final];
+    return final;
 }

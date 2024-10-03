@@ -57,38 +57,42 @@ describe("calculatePlayerScore utility function", () => {
 describe("calculateDealerScore utility function", () => {
     test("should return correct score when there are no aces in hand", () => {
         expect(
-            calculateDealerScore(
+            calculateDealerScore([
                 { name: "2", value: [2] },
-                { name: "3", value: [3] }
-            )
-        ).toEqual(5);
+                { name: "5", value: [5] },
+                { name: "4", value: [4] },
+            ])
+        ).toEqual(11);
     });
 
-    test("should return correct score when first card is ace", () => {
+    test("should make ace 1 when previous cards a lower", () => {
         expect(
-            calculateDealerScore(
+            calculateDealerScore([
+                { name: "5", value: [5] },
+                { name: "3", value: [3] },
                 { name: "A", value: [1, 11] },
-                { name: "10", value: [10] }
-            )
-        ).toEqual(21);
-    });
-
-    test("should return correct score when second card is ace", () => {
-        expect(
-            calculateDealerScore(
-                { name: "8", value: [8] },
-                { name: "A", value: [1, 11] }
-            )
+            ])
         ).toEqual(19);
     });
 
-    test("should return correct score and ace count when there are 2 aces in hand", () => {
+    test("should make ace 11 when previous cards are higher", () => {
         expect(
-            calculateDealerScore(
+            calculateDealerScore([
+                { name: "8", value: [8] },
+                { name: "9", value: [9] },
                 { name: "A", value: [1, 11] },
-                { name: "A", value: [1, 11] }
-            )
-        ).toEqual(12);
+            ])
+        ).toEqual(18);
+    });
+
+    test("should return correct score when whole hand are aces", () => {
+        expect(
+            calculateDealerScore([
+                { name: "A", value: [1, 11] },
+                { name: "A", value: [1, 11] },
+                { name: "A", value: [1, 11] },
+            ])
+        ).toEqual(13);
     });
 });
 

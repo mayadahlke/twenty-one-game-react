@@ -19,6 +19,19 @@ export function dealRandomCard(remainingDeck) {
 }
 
 /**
+ * @param {Array} deck - The deck of cards that are still available to be drawn
+ * @returns {Array} - The player's two cards and the dealer's two cards
+ */
+export function dealTwoCardsPerPlayer(deck) { 
+    const [card1, updatedDeck1] = dealRandomCard(deck);
+    const [card2, updatedDeck2] = dealRandomCard(updatedDeck1);
+    const [card3, updatedDeck3] = dealRandomCard(updatedDeck2);
+    const [card4, updatedDeck4] = dealRandomCard(updatedDeck3);
+
+    return [card1, card2, card3, card4, updatedDeck4];
+}
+
+/**
  * @param {Array} playerCards - The player's current hand
  * @returns {Array} - The player's score and the number of aces in their hand
  */
@@ -39,22 +52,20 @@ export function calculatePlayerScore(card1, card2) {
 }
 
 /**
- * @param {Array} dealersCards - The dealer's current hand
- * @returns {Array} - The dealer's score
+ * @param {Array} hand - The dealer's current hand
+ * @returns {number} - The dealer's current score
  */
-export function calculateDealerScore(card1, card2) {
-    const acesCount =
-        (card1.name === "A" ? 1 : 0) + (card2.name === "A" ? 1 : 0);
-
+export function calculateDealerScore(hand) {
     let score = 0;
-    if (acesCount === 2) {
-        score = 11 + 1;
-    } else if (acesCount === 1) {
-        score = card1.name === "A" ? card2.value[0] + 11 : card1.value[0] + 11;
-    } else {
-        score = card1.value[0] + card2.value[0];
+    for (let i = 0; i < hand.length; i++) {
+        if (hand[i].name === "A" && score + 11 <= 21) {
+            score += 11;
+        } else if (hand[i].name === "A" && score + 11 > 21) {
+            score += 1;
+        } else {
+            score += hand[i].value[0];
+        }
     }
-
     return score;
 }
 
@@ -65,7 +76,7 @@ export function calculateDealerScore(card1, card2) {
  */
 export function calculateFinal(playerScore, dealerScore) {
     // player not bust & dealer not bust = compare scores
-
+    console.log(playerScore, dealerScore);
     if (playerScore === dealerScore) {
         return GameResult.PUSH;
     } else if (playerScore > dealerScore) {
@@ -76,14 +87,13 @@ export function calculateFinal(playerScore, dealerScore) {
 }
 
 /**
-* @param {Array} hand - The hand to reveal
-* @returns {Array} - The revealed hand (sets hidden to false)
-*/
+ * @param {Array} hand - The hand to reveal
+ * @returns {Array} - The revealed hand (sets hidden to false)
+ */
 export function revealHand(hand) {
-    hand.forEach((card) => {
-        card.hidden = false;
+    return hand.map((card) => {
+        return { ...card, hidden: false };
     });
-    return hand;
 }
 
 /**

@@ -2,7 +2,9 @@ import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import Game from "./Game";
 
 describe("Game", () => {
-    afterEach(cleanup);
+    afterEach(() => {
+        cleanup();
+    });
 
     test("dealer and player should start with two cards", () => {
         render(<Game />);
@@ -44,6 +46,7 @@ describe("Game", () => {
         // Check if final is showing
         const final = screen.queryByTestId("final");
         expect(final).toBeTruthy();
+        expect(final.textContent).not.toEqual("");
 
         // Check 'STAND' button is disabled
         expect(standButton.hasAttribute("disabled")).toBeTruthy();
@@ -96,7 +99,8 @@ describe("Game", () => {
 
         // Check that the final result has empty string content
         const final = screen.queryByTestId("final");
-        expect(final.textContent).toBe("");
+        expect(final).toBeTruthy(); 
+        expect(final.textContent).toEqual("");
 
         // Click the 'STAND' button
         const standButton = screen.getByRole("button", { name: "Stand" });
@@ -104,6 +108,6 @@ describe("Game", () => {
         fireEvent.click(standButton);
 
         // Check if the final result doesn't have empty string content
-        expect(final.textContent).not.toBe("");
+        expect(final.textContent).not.toEqual("");
     });
 });

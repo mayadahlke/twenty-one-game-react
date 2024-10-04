@@ -130,7 +130,7 @@ export default function Game() {
         const final = checkForBust(playerScore, dealerScore);
         if (final) {
             setFinal(final);
-            revealHand(dealerCards);
+            setDealerCards(revealHand(dealerCards));
         }
     }, [playerScore, dealerScore]);
 

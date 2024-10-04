@@ -76,7 +76,7 @@ export function calculateDealerScore(hand) {
  */
 export function calculateFinal(playerScore, dealerScore) {
     // player not bust & dealer not bust = compare scores
-    console.log(playerScore, dealerScore);
+
     if (playerScore === dealerScore) {
         return GameResult.PUSH;
     } else if (playerScore > dealerScore) {

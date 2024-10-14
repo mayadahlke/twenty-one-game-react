@@ -1,6 +1,6 @@
 # Twenty One
-### By: Maya Dahlke
-This is the game 21, done in React and Tailwind. 
+## By: Maya Dahlke
+This is the game 21, done in **React.js** and **Tailwind**. 
 
 To play 21, with two players, you can follow these rules:  
 - **Dealing**: The dealer gives each player two cards face up, and one card face down.  
@@ -10,7 +10,13 @@ To play 21, with two players, you can follow these rules:
 - **Busting**: If a player's hand goes over 21, they "bust" and lose.  
 - **Ties**: If both the player and dealer have hands that are tied, the game is a "push".  
 
+## Want to play?
+1) Clone this repository.
+2) In terminal, cd into the folder `twenty-one-game-react/twenty-one`.
+3) Run `npm run start`.
+4) This should take you to `http://localhost:3000/` where you can try out the game.
+
 ## Possible Improvements
  - In the original game players place chips as a bet, so I could add chips and keep score of the chip value amount of the player.
- - The original game also has splitting and doubling down, so if chips were added I could add this as well.
- - I could add other players to make it multiplayer 
+ - The original game also has "splitting" and "doubling down", so if chips were added I could add this as well.
+ - I could add other players to make it multiplayer.

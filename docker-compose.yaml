@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  twenty-one:
+    build: ./twenty-one
+    container_name: twenty_one_c
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./twenty-one:/app
+      - /app/node_modules
